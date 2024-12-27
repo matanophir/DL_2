@@ -9,28 +9,32 @@ math (delimited with $$).
 # Part 1 (Backprop) answers
 
 part1_q1 = r"""
-**Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+**Your answer:**\
+ 1.\
+ A. we can look at $\pderiv{\mat{Y}}{\mat{X}}$ as a matrix D with the shape of X- (N,$D_{in}$) where every element $d_{ii} $ is $\pderiv{\mat{Y}}{\mat{X_{ii}}}$. this also yields a matrix $D2$ with the size of Y - (N, $D_{out}$).\
+ overall we get $(N, D_{in}, N, D_{out}) = (64,1024,64,512)$\
+ \
+ B. Yes most of the elements are zero because every output $Y_i$ is reliant only on the respective input $X_i$ so at every $D2$ only one row will be non-zero.\
+ \
+ C. We don't need to materialize the above Jacobian to calculate $\pderiv{\mat{Y}}{\mat{X}}$ because we only the need the product $\pderiv{\mat{L}}{\mat{Y}} * \pderiv{\mat{Y}}{\mat{X}}$ thanks to the chain rule.\
+since $\pderiv{\mat{Y}}{\mat{X}} = \mat{W}$ we can just compute $\pderiv{\mat{L}}{\mat{X}} * \mat{W}$.\
+\
+2.\
+A following the logic above we can conclude that $\pderiv{\mat{Y}}{\mat{W}}$ is of size $(512,1024,64,512)$.\
+\
+B. Same here. the Jacobian is sparse because only one score in a given y is reliant on some $w_{ii}$, so in every $D2$ matrix we will have only one non-zero column.\
+in simpler terms every col in $\mat{Y}$ depends on one row in $\mat{W}$.\
+\
+C. Again we dont need. we can just compute $\pderiv{\mat{Y}}{\mat{W}} = \mat{X}$ and use the chain rule to compute $\delta\mat{W}$
+ 
 """
 
 part1_q2 = r"""
 **Your answer:**
+ back-propagation is not required because we can just compute $\delta\mat{X}$ by hand.\
+ this straight on approach will get very messy very quickly and it wouldn't be modular, i.e we would have to calculate again with every change we introduce to the architecture.
+ 
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
 
 """
 
