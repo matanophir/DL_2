@@ -47,7 +47,9 @@ def part2_overfit_hp():
     wstd, lr, reg = 0, 0, 0
     # TODO: Tweak the hyperparameters until you overfit the small dataset.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    wstd = 0.1
+    lr = 0.01
+    reg = 0.01
     # ========================
     return dict(wstd=wstd, lr=lr, reg=reg)
 
@@ -64,7 +66,11 @@ def part2_optim_hp():
     # TODO: Tweak the hyperparameters to get the best results you can.
     # You may want to use different learning rates for each optimizer.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    wstd = 0.1
+    lr_vanilla = 0.02
+    lr_momentum = 0.002
+    lr_rmsprop = 0.00015
+    reg = 0.01
     # ========================
     return dict(
         wstd=wstd,
@@ -83,47 +89,48 @@ def part2_dropout_hp():
     # TODO: Tweak the hyperparameters to get the model to overfit without
     # dropout.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    wstd = 0.1
+    lr = 0.002
     # ========================
     return dict(wstd=wstd, lr=lr)
 
 
 part2_q1 = r"""
-**Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+**Your answer:**\
+1.Yes it matches what we expected. We expected poorer results on the training set but better results on the test set.\
+Introducing dropout makes the model to generalize better at the cost of added noise in the training phase.\
+\
+2. As expected higher drop-out leads to poorer performance on the training set because of the added noise (the model keeps changing and it makes it difficult learning).\
+It also seems that highly regularized model (high dropout) struggles to generalize and preform better than the 0.4 model on the test set.\
+Interesting to see that the 0.8 model has lower avg loss on the test set but also lower test_acc. We're using CE loss and this finding may indicate that maybe the 0.8 was overall closer to the true labels but was less confident- reminds of high regularization that "smoothens" (underfitting) the decisions.
 
 """
 
 part2_q2 = r"""
-**Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+**Your answer:**\
+Yes it can happen and we can see an example for this by looking at the 0.4 model from iteration 10.\
+it can happen when the model becomes less confident (i.e gives lower probability to answers) overall (and so also on the right answer) lowering the $log(softmax(x))$ term, but manages to still give the highest probability to the right answers.
 
 """
 
 part2_q3 = r"""
-**Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+**Your answer:**\
+1. GD and back-propagation are two things from different but connected domains.\
+GD is a method to optimize a model by using the gradients w.r.t the parameters, and one way of obtaining them is using back-propagation (and the chain rule) to calculate them with ease.\
+\
+2. As stated earlier: let $N$ be the total training samples and $M$ the size of batch we are working on-\
+- If $M=N$ this is known as regular gradient descent. If the dataset does not fit in memory the gradient of this loss becomes infeasible to compute.\
+- If $M=1$, the loss is computed w.r.t. a single different sample each time. This is known as stochastic gradient descent.\
+- If $1<M<N$ this is known as stochastic mini-batch gradient descent. This is the most commonly-used option.\
+So it comes down to the number of samples we're working on between steps of the optimizer.\
+Stochastic versions may be better for optimization because we get a dynamic loss surface which help the optimizer to don't get stuck in local minimums.\
+\
+3. There can be few reasons why stochastic version are more common. First and foremost many times the dataset can't fit entirely into memory so it is required to split in order to work with, leading to stochastic version.\
+Secondly, as stated above the stochastic version may lead to better optimization by avoiding local minimums.\
+we also think that the stochastic version makes it harder for the model to over-fit and thus might be better foo generalization.\
+\
+4.\
+A. No it wouldn't produce a gradient equivalent to GD because in the forward pass we only calculate the needed function and dont accumulate anything, so in practice the gradients will be lost.\
 
 """
 

@@ -255,6 +255,7 @@ class Linear(Layer):
 
         # TODO: Compute the affine transform
         # ====== YOUR CODE: ======
+        x = x.view(x.size(0),-1) # so i would get the right size of matrix.
         out = x @ self.w.T + self.b
         # ========================
 
@@ -274,7 +275,6 @@ class Linear(Layer):
         #   - db, the gradient of the loss with respect to b
         #  Note: You should ACCUMULATE gradients in dw and db.
         # ====== YOUR CODE: ======
-        # the sum is to agg the loss over all the samples in the batch and the += is for across batches
         dx = dout @ self.w
         self.dw += dout.T @ x
         self.db += torch.sum(dout, dim=0)
@@ -365,7 +365,13 @@ class Dropout(Layer):
         #  Notice that contrary to previous layers, this layer behaves
         #  differently a according to the current training_mode (train/test).
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        if self.training_mode:
+            mask = torch.zeros_like(x).bernoulli_(1-self.p)
+            out = (x * mask) / (1 - self.p)
+            
+            self.grad_cache['mask'] = mask
+        else:
+            out = x
         # ========================
 
         return out
@@ -373,7 +379,11 @@ class Dropout(Layer):
     def backward(self, dout):
         # TODO: Implement the dropout backward pass.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        if self.training_mode:
+            mask = self.grad_cache['mask']
+            dx = (mask * dout) / (1 - self.p)
+        else:
+            dx = dout
         # ========================
 
         return dx
@@ -494,9 +504,13 @@ class MLP(Layer):
 
         while i+1 < len(sizes):
             layers += [fc(sizes[i],sizes[i+1]), activ()]
+            if dropout > 0:
+                layers += [Dropout(p= dropout)]
             i += 1
         
         layers.pop()
+        if dropout > 0:
+            layers.pop()
 
         # ========================
 
