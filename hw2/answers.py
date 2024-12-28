@@ -130,20 +130,25 @@ Secondly, as stated above the stochastic version may lead to better optimization
 we also think that the stochastic version makes it harder for the model to over-fit and thus might be better foo generalization.\
 \
 4.\
-A. No it wouldn't produce a gradient equivalent to GD because in the forward pass we only calculate the needed function and dont accumulate anything, so in practice the gradients will be lost.\
-
+A. No it wouldn't produce a gradient equivalent to GD because in our implementation the forward pass we only calculate the needed function and doesn't accumulate anything, so in practice the gradients (or the needed inputs at every step) will be lost.\
+If we were to change the implementation so that we will save the needed state at every step or maybe avg it, it may work.
+If the question actually ask to do forward and backward for every batch (without zero_grad) and only make one final step with the optimizer- it would work because at each back-propagation we sum the gradients w.r.t each parameter and from the linearity of summation it's equal.\
+\
+B. Depends on the implementation. if we chose to save the state at each forward pass in order to later calculate the gradient, we will have to save a lot of data so we would run out of memory. 
 """
 
 part2_q4 = r"""
-**Your answer:**
+**Your answer:**\
+1.\
+A. We will notice that for the forward mode we only need the last computed gradient ($\pderiv{v_j}{v_0}$) and $v_j.val$ to multiply with $\pderiv{v_{j+1}}{v_j}$ so we don't actually need to store values on the nodes (other than the last one) so it's $O(1)$ memory.\
+B.? We can put 'checkpoints' of calculated gradient (forward AD) so we wouldn't need to save all the activations in the forward pass. and then when calculating the backward pass we will use those checkpoints.\
+maybe truncate the nodes into one by calculating the analytical derivative?
+
+2. It can be under certain constraints. the forward pass technique can be useful mainly when we have only one parameter because otherwise we would need to compute the forward pass w.r.t every parameter which would make it inefficient.\
+    ?
+3. ?
 
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
 
 """
 
@@ -189,56 +194,34 @@ def part3_optim_hp():
 
 
 part3_q1 = r"""
-**Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+**Your answer:**\
+1. optimization error is the error that occurs due to the training process. e.g if we are training with gradient decent and the loss is non-convex we might get stuck on a local minima and not converge to the global minimum $\if$ optimization error.\
+we can decrease this error by using different maybe more suitable optimizers such as rmsprop or momentum.\
+\
+2. generalization error occurs because We train to minimize our empirical loss instead of the population loss. To reduce this error we can various method to try and prevent the overfitting such as regularization and dropout.\
+\
+3. approximation error occurs when we only consider a limited set of possible function. due to the approximation law we rarely have high approximation error because was shown that MLP with one hidden layer can approximate every function.
 """
 
 part3_q2 = r"""
 **Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+Say we are trying to classify ones from a set of numbers between 0-9.
+We would have a high false positive rate if in this dataset the sevens are very similar to a one. we would classify all the sevens as ones.\
+We would have a high false negative rate if all the ones are not drawn similarly enough to one another and the classifier can't differentiate them from the other numbers.
 """
 
 part3_q3 = r"""
 **Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+We have no ROC curve but we assume the optimal point is the one that balances FPR and FNR.\
+1. in this scenerio we have no cost to have a false negative situation because the patient will develop non-lethal symptoms that will show he has the disease. so we only diagnose a patient with disease if we have high certainty.\
+2. now we high cost for false negative so we would diagnose disease even with low certainty, thus risking in high FPR but at the cost a saving lives. 
 """
 
 
 part3_q4 = r"""
 **Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+In MLP every data point passes through the network and the loss is calculated w.r.t that point. in a sentence words has connections (i.e order) them that must be evaluated but unfortunately lost due to the way MLP works.\
+So an MLP will predict the sentiment based on each word separately.
 """
 # ==============
 # Part 4 (CNN) answers
