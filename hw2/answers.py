@@ -239,21 +239,36 @@ def part4_optim_hp():
     #    What you returns needs to be a callable, so either an instance of one of the
     #    Loss classes in torch.nn or one of the loss functions from torch.nn.functional.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    lr = 0.01
+    weight_decay = 0.0001
+    momentum = 0.9
+    loss_fn = torch.nn.CrossEntropyLoss()
     # ========================
     return dict(lr=lr, weight_decay=weight_decay, momentum=momentum, loss_fn=loss_fn)
 
 
 part4_q1 = r"""
 **Your answer:**
+1. the formula for the number of paramaters in a conv layer is: $K * (C_{in}*F^2 + 1)$ 
+so for the left block (when we replace 64 with 256):
+- first layer params = $256 * (256*3^2 +1) = 590080$
+- second layer is the same = 590080
+- total = 1180160
 
+for the right block:
+- first layer = $64 *(256*1^2 +1) = 16448$
+- second layer = $64 * (64*9 + 1) =  36928$
+- third = $256 * (64*1 +1) = 16640$
+- total = 70016
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+2. the amount of operations in a layer from ${C_{in},H_{in},W_{in}}$ to $C_{out},H_{out},W_{out}$ is $2 * C_{in} * F^2 * C_{out} H_{out} * W{out}$
+where F is the size of the kernel and the '2' is for sum and mul.\
+in our implementation we kept the spatial dim so we can see the number of operations are mainly dependant on the number of channels which the left block has much more of.
+
+3. the regular block uses 3x3 directly on the 256 feature map so its able to combine the input both spatially and across feature maps ($(3,3,C_{in})$ kernels).\
+the bottle-neck block first reduces dimensionality and then does the 3x3 conv on the reduced form which means its ability to combine input spatially is a bit worse.\
+regarding the ability to combine across feature maps, we think it still retains high ability and this is because of the 1x1 convs that combines the input across feature maps.
+
 
 """
 

@@ -268,7 +268,22 @@ class ClassifierTrainer(Trainer):
         #  - Update parameters
         #  - Classify and calculate number of correct predictions
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        
+        #forward 
+        y_hat = self.model(X)
+        loss = self.loss_fn(y_hat, y)
+
+        #backward
+        self.optimizer.zero_grad()
+        loss.backward()
+
+        #step
+        self.optimizer.step()
+
+        #classify
+        num_correct = torch.sum(self.model.classify_scores(y_hat) == y)
+
+        batch_loss = loss
         # ========================
 
         return BatchResult(batch_loss, num_correct)
@@ -288,7 +303,10 @@ class ClassifierTrainer(Trainer):
             #  - Forward pass
             #  - Calculate number of correct predictions
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            y_hat = self.model(X)
+            batch_loss = self.loss_fn(y_hat, y)
+        
+            num_correct = torch.sum(self.classify_scores(y_hat) == y)
             # ========================
 
         return BatchResult(batch_loss, num_correct)
