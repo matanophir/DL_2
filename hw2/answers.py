@@ -280,56 +280,37 @@ regarding the ability to combine across feature maps, we think it still retains 
 
 part5_q1 = r"""
 **Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+1.it seems depth can be a real problem to CNNs as it can make a model untrainable. the 'shallower' models (L2 L4) were able to learn while the deeper ones didn't manage.\
+between the models who learned the difference seems negligible but the model who scored the best was L4_64K. we assume thats because he had more expressive power (more kernels) without the risk of over-fitting (highish reg 1e-2) while still able to control the gradient flow.\
+\
+2. yes there were values of L for which the network wasn't trainable- L8, L16. we think it's mainly because of vanishing gradients. this may be resolved with batch normalization to stabilize gradients along the way and ofc adding residual connections.
 
 """
 
 part5_q2 = r"""
 **Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+So we've seen in 1.1 that the net can handle about 4 layers and more kernels made it better presumably because of the added expressiveness (with sufficient regularization).\
+here our ideas get reaffirmed as the model is unteachable at L8 and the best result came from the model with the most kernels (and possible layers) L4_K128.\
 
 """
 
 part5_q3 = r"""
 **Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+yet again we see that the model can handle up to 4 layers as it failed at L3_k64-128 (6 layers) presumable because of the gradient flow or lack thereof.\
+worth noting the L2_k64-128 did worse that L4_128. the added expressiveness works in our favour here.
 
 """
 
 part5_q4 = r"""
 **Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+now we see that the net is still trainable with a lot more layers and actually the model with the most layers L32_K32 scored the highest.\
+we can see that as we increased the kernel sizes the model did worse. noticing that the number of kernels get very large We are assuming that the poorer results also relates to the gradients but in a different way- the gradient is distributed across all these parameters hence each one get smaller and maybe leads to very slow learning rate that coupled with the early stopping mechanism might lead to problems.
+quick calculation show that L4_k64-128-256 has about $4*64*64*9 + 4*128*128*9 + 4*256*256*9 = 1327104$ parameters and L32_K32 has about $32*32*(32*9) = 294912$ which might explain it but we need to test some more stuff like adding batch normalization, residual paths more frequently (not just after pooling which happens every 8th block), tweaking the learning rate and increasing early stopping param to see how it behaves.
 
 """
 
+part5_q5 = r"""
+"""
 
 # ==============
 
@@ -339,14 +320,17 @@ An equation: $e^{i\pi} -1 = 0$
 
 part6_q1 = r"""
 **Your answer:**
+1. The model did a pretty bad job at detecting the objects.\
+the bounding boxes did manage to bound objects but the class prediction was very poor and the confidence is low accordingly.\
 
+2. in the first image of dolphins one possible cause is training dataset bias:\
+- the model was mostly shown during the training process surfer in the ocean and therefore without distinct features of something else, it will classify an object in that scenery as a surfer.\
+- the image is missing its texture and maybe it something the model didn't see before.\
+in the dog image there could be a problem with how the model assigns bounding box and the following classification.\
+if the model doesn't intersect the image good enough and left to process big bounding boxes that may contain more than on class, then it might confuse the model as we see here.\
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+3. yolo is trained end to end on a single neural network so we can do what we have seen in tutorial 4 PGD attack.\
+    by taking an image and maximize its loss where the input parameter (which we are optimizing) is a delta from the original image.
 
 """
 
@@ -355,38 +339,21 @@ part6_q2 = r"""
 **Your answer:**
 
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
 """
 
 
 part6_q3 = r"""
 **Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+actually the model did pretty good when given reasonable tasks (see cow on the beach or moving man).\
+when given more difficult tasks such as an almost completely hidden banana or a blurred plant it didn't succeed in classifying then.
+We can assume the following pitfalls caused the mistakes:\
+model bias + deformation - ocean-cow\
+occlusion - hidden_banana\
+blurring - blurred_plant.
 
 """
 
 part6_bonus = r"""
 **Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+Tried fixing the other photos but failed. we've resharpen the image,
 """

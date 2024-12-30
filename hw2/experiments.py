@@ -5,6 +5,8 @@ import torch
 import random
 import argparse
 import itertools
+import torch.utils
+import torch.utils.data
 import torchvision
 from torch.utils.data import DataLoader
 from torchvision.datasets import CIFAR10
@@ -53,7 +55,7 @@ def mlp_experiment(
 def cnn_experiment(
     run_name,
     out_dir="./results",
-    seed=None,
+    seed=0,
     device=None,
     # Training params
     bs_train=128,
@@ -67,10 +69,18 @@ def cnn_experiment(
     # Model params
     filters_per_layer=[64],
     layers_per_block=2,
-    pool_every=2,
+    pool_every=4,
     hidden_dims=[1024],
     model_type="cnn",
     # You can add extra configuration for your experiments here
+    conv_params = dict(kernel_size=3, padding=1), # for regular cnn
+    activation_type = "relu",
+    activation_params = {},
+    pooling_type = "max",
+    pooling_params = dict(kernel_size=2),
+    batchnorm = False, # for resnet ⬇️
+    dropout = 0,
+    bottleneck = False,
     **kw,
 ):
     """
@@ -107,7 +117,55 @@ def cnn_experiment(
     #   for you automatically.
     fit_res = None
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    sample_data , _ = ds_train[0]
+    shape = sample_data.shape
+    dl_train = torch.utils.data.DataLoader(ds_train, batch_size = bs_train, shuffle = False)
+    dl_test = torch.utils.data.DataLoader(ds_test, batch_size = bs_test, shuffle = True)
+
+    channels = [k for k in filters_per_layer for _ in range(layers_per_block)]
+
+    
+    model = ArgMaxClassifier(model = model_cls(
+        in_size = shape,
+        out_classes = 10,
+        channels = channels,
+        pool_every = pool_every,
+        hidden_dims = hidden_dims,
+        activation_type = activation_type,
+        activation_params = activation_params,
+        pooling_type = pooling_type,
+        pooling_params = pooling_params,
+        conv_params = conv_params,  # for regular cnn
+        batchnorm = batchnorm,  # for resnet ⬇️
+        dropout = dropout,
+        bottleneck = bottleneck
+    ))
+    
+    loss_fn = torch.nn.CrossEntropyLoss()
+    
+    optimizer = torch.optim.Adam(model.parameters(), lr = lr, weight_decay= reg) # why not
+    
+    trainer = ClassifierTrainer(
+        model = model,
+        loss_fn = loss_fn,
+        optimizer = optimizer,
+        device = device, #handles the model and data 
+    )
+    print(model)
+    # print(run_name)
+    
+    fit_res = trainer.fit(
+        dl_train = dl_train,
+        dl_test = dl_test,
+        num_epochs = epochs,
+        max_batches = batches,
+        checkpoints = checkpoints,
+        early_stopping = early_stopping,
+        print_every = 0,
+        **kw,
+    )
+
+
     # ========================
 
     save_experiment(run_name, out_dir, cfg, fit_res)

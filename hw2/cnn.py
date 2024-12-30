@@ -30,6 +30,7 @@ class CNN(nn.Module):
         activation_params: dict = {},
         pooling_type: str = "max",
         pooling_params: dict = {},
+        **kwargs,
     ):
         """
         :param in_size: Size of input images, e.g. (C,H,W).
@@ -131,7 +132,7 @@ class CNN(nn.Module):
         dims = self.hidden_dims + [self.out_classes]
 
         nonlins = [self.activation_type] * len(self.hidden_dims) + [None]
-        ACTIVATION_DEFAULT_KWARGS[self.activation_type] = self.activation_params
+        ACTIVATION_DEFAULT_KWARGS[self.activation_type] = dict(self.activation_params)
 
         mlp = MLP(in_dim, dims, nonlins)
         # ========================
@@ -338,7 +339,7 @@ class ResNet(CNN):
         N = len(self.channels)
         P = self.pool_every
         kers = [3] * P
-        conv_params = dict(batchnorm= self.batchnorm, dropout= self.dropout, activation_type= self.activation_type, activation_params= self.activation_params)
+        conv_block_params = dict(batchnorm= self.batchnorm, dropout= self.dropout, activation_type= self.activation_type, activation_params= self.activation_params)
         
         pool = POOLINGS[self.pooling_type]
 
@@ -354,9 +355,9 @@ class ResNet(CNN):
 
             out_chans = curr_chans[-1]
             if (self.bottleneck and in_channels == out_chans):
-                layers += [ResidualBottleneckBlock(in_channels, curr_chans[1:-1], kers[1:-1], **conv_params)]
+                layers += [ResidualBottleneckBlock(in_channels, curr_chans[1:-1], kers[1:-1], **conv_block_params)]
             else:
-                layers += [ResidualBlock(in_channels, curr_chans, kers, **conv_params)]
+                layers += [ResidualBlock(in_channels, curr_chans, kers, **conv_block_params)]
             
             if (not last):
                 layers += [pool(**self.pooling_params)]

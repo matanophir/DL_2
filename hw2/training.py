@@ -90,6 +90,8 @@ class Trainer(abc.ABC):
             test_result = self.test_epoch(dl_test, verbose= verbose, **kw)
             test_loss.append(sum(test_result.losses)/len(test_result.losses))
             test_acc.append(test_result.accuracy)
+
+            actual_num_epochs += 1
             # ========================
 
             # TODO:
@@ -281,9 +283,10 @@ class ClassifierTrainer(Trainer):
         self.optimizer.step()
 
         #classify
-        num_correct = torch.sum(self.model.classify_scores(y_hat) == y)
+        with torch.no_grad(): # no need to calculate gradients
+            num_correct = torch.sum(self.model.classify_scores(y_hat) == y).item()
 
-        batch_loss = loss
+        batch_loss = loss.item()
         # ========================
 
         return BatchResult(batch_loss, num_correct)
@@ -304,9 +307,9 @@ class ClassifierTrainer(Trainer):
             #  - Calculate number of correct predictions
             # ====== YOUR CODE: ======
             y_hat = self.model(X)
-            batch_loss = self.loss_fn(y_hat, y)
+            batch_loss = self.loss_fn(y_hat, y).item()
         
-            num_correct = torch.sum(self.classify_scores(y_hat) == y)
+            num_correct = torch.sum(self.model.classify_scores(y_hat) == y).item()
             # ========================
 
         return BatchResult(batch_loss, num_correct)

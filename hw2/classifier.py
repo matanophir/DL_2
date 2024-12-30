@@ -22,7 +22,6 @@ class Classifier(nn.Module, ABC):
 
         # TODO: Add any additional initializations here, if you need them.
         # ====== YOUR CODE: ======
-        self.sf = nn.Softmax(dim= 1)
         # ========================
 
     def forward(self, x: Tensor) -> Tensor:
@@ -59,7 +58,8 @@ class Classifier(nn.Module, ABC):
         """
         # TODO: Calculate class probabilities for the input.
         # ====== YOUR CODE: ======
-        return self.sf(z)
+        sf = nn.Softmax(dim= 1)
+        return sf(z)
         # ========================
 
     def classify(self, x: Tensor) -> Tensor:
