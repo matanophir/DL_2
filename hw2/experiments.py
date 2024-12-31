@@ -151,7 +151,7 @@ def cnn_experiment(
         optimizer = optimizer,
         device = device, #handles the model and data 
     )
-    print(model)
+    # print(model)
     # print(run_name)
     
     fit_res = trainer.fit(
@@ -161,7 +161,7 @@ def cnn_experiment(
         max_batches = batches,
         checkpoints = checkpoints,
         early_stopping = early_stopping,
-        print_every = 0,
+        print_every = 5,
         **kw,
     )
 

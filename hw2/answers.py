@@ -303,8 +303,8 @@ worth noting the L2_k64-128 did worse that L4_128. the added expressiveness work
 
 part5_q4 = r"""
 **Your answer:**
-now we see that the net is still trainable with a lot more layers and actually the model with the most layers L32_K32 scored the highest.\
-we can see that as we increased the kernel sizes the model did worse. noticing that the number of kernels get very large We are assuming that the poorer results also relates to the gradients but in a different way- the gradient is distributed across all these parameters hence each one get smaller and maybe leads to very slow learning rate that coupled with the early stopping mechanism might lead to problems.
+now we see that the net is still trainable with a lot more layers and actually the model with the most layers L32_K32 out-preformed (score and stability) other models.\
+we can see that as we increased the kernel sizes the model scored almost the same but became less stable. noticing that when the number of kernels get very large (L8_k64-128-256) We are assuming that the poorer results also relates to the gradients but in a different way- the gradient is distributed across all these parameters hence each one get smaller and maybe leads to very slow learning rate that coupled with the early stopping mechanism might lead to problems.
 quick calculation show that L4_k64-128-256 has about $4*64*64*9 + 4*128*128*9 + 4*256*256*9 = 1327104$ parameters and L32_K32 has about $32*32*(32*9) = 294912$ which might explain it but we need to test some more stuff like adding batch normalization, residual paths more frequently (not just after pooling which happens every 8th block), tweaking the learning rate and increasing early stopping param to see how it behaves.
 
 """
