@@ -1,0 +1,50 @@
+*** SLURM BATCH JOB 'test_job' STARTING ***
+*** Activating environment cs236781-hw ***
+[NbConvertApp] Converting notebook ./Part0_Intro.ipynb to notebook
+[NbConvertApp] Writing 4022 bytes to Part0_Intro.ipynb
+[NbConvertApp] Converting notebook ./Part1_Backprop.ipynb to notebook
+[NbConvertApp] Writing 44616 bytes to Part1_Backprop.ipynb
+[NbConvertApp] Converting notebook ./Part2_Optimization.ipynb to notebook
+[NbConvertApp] Writing 2117494 bytes to Part2_Optimization.ipynb
+[NbConvertApp] Converting notebook ./Part3_MLP.ipynb to notebook
+[NbConvertApp] Writing 86072 bytes to Part3_MLP.ipynb
+[NbConvertApp] Converting notebook ./Part4_CNN.ipynb to notebook
+[NbConvertApp] Writing 101143 bytes to Part4_CNN.ipynb
+[NbConvertApp] Converting notebook ./Part5_CNN_Experiments.ipynb to notebook
+[NbConvertApp] Writing 1753800 bytes to Part5_CNN_Experiments.ipynb
+[NbConvertApp] Converting notebook ./Part6_YOLO.ipynb to notebook
+[NbConvertApp] Writing 2897892 bytes to Part6_YOLO.ipynb
+[NbConvertApp] Converting notebook ./hw2-208115055_326107042.ipynb to html
+[NbConvertApp] ERROR | Notebook JSON is invalid: Additional properties are not allowed ('id' was unexpected)
+
+Failed validating 'additionalProperties' in markdown_cell:
+
+On instance['cells'][119]:
+{'cell_type': 'markdown',
+ 'id': '616125a5-44b0-4f3c-a80a-3f836432bb33',
+ 'metadata': {'pycharm': {'name': '#%% md\n'}, 'tags': []},
+ 'source': '$$\n'
+           '\\newcommand{\\mat}[1]{\\boldsymbol {#1}}\n'
+           '\\newcommand{\\mattr}[1]...'}
+[NbConvertApp] WARNING | Alternative text is missing on 27 image(s).
+[NbConvertApp] Writing 6465492 bytes to hw2-208115055_326107042.html
+>> Running 7 notebooks...
+>> Running nbconvert on notebook ./Part0_Intro.ipynb [execute|inplace]
+>> Finished nbconvert on notebook ./Part0_Intro.ipynb, elapsed=3.973s
+>> Running nbconvert on notebook ./Part1_Backprop.ipynb [execute|inplace]
+>> Finished nbconvert on notebook ./Part1_Backprop.ipynb, elapsed=7.945s
+>> Running nbconvert on notebook ./Part2_Optimization.ipynb [execute|inplace]
+>> Finished nbconvert on notebook ./Part2_Optimization.ipynb, elapsed=163.587s
+>> Running nbconvert on notebook ./Part3_MLP.ipynb [execute|inplace]
+>> Finished nbconvert on notebook ./Part3_MLP.ipynb, elapsed=5.583s
+>> Running nbconvert on notebook ./Part4_CNN.ipynb [execute|inplace]
+>> Finished nbconvert on notebook ./Part4_CNN.ipynb, elapsed=16.502s
+>> Running nbconvert on notebook ./Part5_CNN_Experiments.ipynb [execute|inplace]
+>> Finished nbconvert on notebook ./Part5_CNN_Experiments.ipynb, elapsed=28.205s
+>> Running nbconvert on notebook ./Part6_YOLO.ipynb [execute|inplace]
+>> Finished nbconvert on notebook ./Part6_YOLO.ipynb, elapsed=25.773s
+>> Running nbmerge on notebooks Part0_Intro, Part1_Backprop, Part2_Optimization, Part3_MLP, Part4_CNN, Part5_CNN_Experiments, Part6_YOLO
+>> Running nbconvert on notebook ./hw2-208115055_326107042.ipynb []
+>> Finished nbconvert on notebook ./hw2-208115055_326107042.ipynb, elapsed=5.625s
+>> Created submission ./hw2-208115055_326107042.zip. Good luck!
+*** SLURM BATCH JOB 'test_job' DONE ***

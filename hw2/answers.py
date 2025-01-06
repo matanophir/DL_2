@@ -141,12 +141,13 @@ part2_q4 = r"""
 **Your answer:**\
 1.\
 A. We will notice that for the forward mode we only need the last computed gradient ($\pderiv{v_j}{v_0}$) and $v_j.val$ to multiply with $\pderiv{v_{j+1}}{v_j}$ so we don't actually need to store values on the nodes (other than the last one) so it's $O(1)$ memory.\
-B.? We can put 'checkpoints' of calculated gradient (forward AD) so we wouldn't need to save all the activations in the forward pass. and then when calculating the backward pass we will use those checkpoints.\
-maybe truncate the nodes into one by calculating the analytical derivative?
+B. we can use the chain rule to start from the last node and propagate the gradient back to the first node. memory complexity will be O(n) because we need to store intermediate values.\
 
-2. It can be under certain constraints. the forward pass technique can be useful mainly when we have only one parameter because otherwise we would need to compute the forward pass w.r.t every parameter which would make it inefficient.\
-    ?
-3. ?
+2. both ADs can be generalized for arbitrary computation graphs.\
+ the forward AD technique can be useful mainly when we have only one starting node because otherwise we would need to compute the forward AD w.r.t every starting node which would make it inefficient.\
+ the backward AD is useful when having a single last node, as in the usual case (loss function).\
+
+3. these things can be useful in the context of deep neural networks because we can calculate the gradient of the loss w.r.t the parameters in a very efficient and modular way.\
 
 
 
@@ -303,7 +304,7 @@ worth noting the L2_k64-128 did worse that L4_128. the added expressiveness work
 
 part5_q4 = r"""
 **Your answer:**
-now we see that the net is still trainable with a lot more layers and actually the model with the most layers L32_K32 out-preformed (score and stability) other models.\
+now we see that the net is still trainable with a lot more layers and actually the model with the most layers L32_K32 out-preformed (score and stability but very close to L2/L4_K64_-128-256) other models.\
 we can see that as we increased the kernel sizes the model scored almost the same but became less stable. noticing that when the number of kernels get very large (L8_k64-128-256) We are assuming that the poorer results also relates to the gradients but in a different way- the gradient is distributed across all these parameters hence each one get smaller and maybe leads to very slow learning rate that coupled with the early stopping mechanism might lead to problems.
 quick calculation show that L4_k64-128-256 has about $4*64*64*9 + 4*128*128*9 + 4*256*256*9 = 1327104$ parameters and L32_K32 has about $32*32*(32*9) = 294912$ which might explain it but we need to test some more stuff like adding batch normalization, residual paths more frequently (not just after pooling which happens every 8th block), tweaking the learning rate and increasing early stopping param to see how it behaves.
 
