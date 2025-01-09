@@ -14,30 +14,26 @@ part1_q1 = r"""
  A. we can look at $\pderiv{\mat{Y}}{\mat{X}}$ as a matrix D with the shape of X- (N,$D_{in}$) where every element $d_{ii} $ is $\pderiv{\mat{Y}}{\mat{X_{ii}}}$. this also yields a matrix $D2$ with the size of Y - (N, $D_{out}$).\
  overall we get $(N, D_{in}, N, D_{out}) = (64,1024,64,512)$\
  \
- B. Yes most of the elements are zero because every output $Y_i$ is reliant only on the respective input $X_i$ so at every $D2$ only one row will be non-zero.\
- \
- C. We don't need to materialize the above Jacobian to calculate $\pderiv{\mat{Y}}{\mat{X}}$ because we only the need the product $\pderiv{\mat{L}}{\mat{Y}} * \pderiv{\mat{Y}}{\mat{X}}$ thanks to the chain rule.\
-since $\pderiv{\mat{Y}}{\mat{X}} = \mat{W}$ we can just compute $\pderiv{\mat{L}}{\mat{X}} * \mat{W}$.\
+B. Yes because $\pderiv{\mat{Y}_n}{\mat{X}_m}$ is zero whenever n /= m.\
+
+C. Thanks to the sparsity mentioned above, among other things, there's no really need in the whole Jacobian which would be ofc infeasible. Rather,\
+We can obtain $\pderiv{\mat{Y}}{\mat{W}} = \pderiv{\mat{Y}}{\mat{X}} * \pderiv{\mat{X}}{\mat{W}}$ by equivalently using:\
+$Y = XW^T + b$ -> $\delta\mat{X}=\delta\mat{Y} * \mat{W}$\
 \
 2.\
-A following the logic above we can conclude that $\pderiv{\mat{Y}}{\mat{W}}$ is of size $(512,1024,64,512)$.\
+A. following the logic above we can conclude that $\pderiv{\mat{Y}}{\mat{W}}$ is of size $(512,1024,64,512)$.\
 \
-B. Same here. the Jacobian is sparse because only one score in a given y is reliant on some $w_{ii}$, so in every $D2$ matrix we will have only one non-zero column.\
-in simpler terms every col in $\mat{Y}$ depends on one row in $\mat{W}$.\
+B.
+$\mat{Y}_{n,j}$ is affected only by $\mat{W}_{j,i}$ (for all i). Thus, $\pderiv{\mat{Y}}{\mat{W}}$ is sparse as every element $(n,k,j,i)$ which represents $\pderiv\mat{Y}_{n,k}/\pderiv\mat{W}_{j,i} is zero whenever $k!=j$.\
 \
-C. Again we dont need. we can just compute $\pderiv{\mat{Y}}{\mat{W}} = \mat{X}$ and use the chain rule to compute $\delta\mat{W}$
+C. No. Again, similarly: $\deltaW=\delta(Y)*X$\
  
 """
 
 part1_q2 = r"""
 **Your answer:**
- back-propagation is not required because we can just compute $\delta\mat{X}$ by hand.\
- this straight on approach will get very messy very quickly and it wouldn't be modular, i.e we would have to calculate again with every change we introduce to the architecture.
- 
-
-
+Generally preferred but this is not a must. We've talked in class about some alternatives, in particular - even computing $\delta\mat{X}X$ by hand is possible. This quickly will get messy and ofc isn't scalable but possible...\
 """
-
 
 # ==============
 # Part 2 (Optimization) answers
@@ -141,13 +137,22 @@ part2_q4 = r"""
 **Your answer:**\
 1.\
 A. We will notice that for the forward mode we only need the last computed gradient ($\pderiv{v_j}{v_0}$) and $v_j.val$ to multiply with $\pderiv{v_{j+1}}{v_j}$ so we don't actually need to store values on the nodes (other than the last one) so it's $O(1)$ memory.\
-B. we can use the chain rule to start from the last node and propagate the gradient back to the first node. memory complexity will be O(n) because we need to store intermediate values.\
+B. If we would calculate the gradients with the chain rule we would need to store all the intermediate values so the memory complexity would be $O(n)$.\
+    We can avoid this if we have some assumptions such as all the functions are easily invertible and then we can perform backward pass and have both the value and the grad in each "step" acheiving O(1) memory complexity (only ~current "step" matters) and O(n) computation.\
 
-2. both ADs can be generalized for arbitrary computation graphs.\
- the forward AD technique can be useful mainly when we have only one starting node because otherwise we would need to compute the forward AD w.r.t every starting node which would make it inefficient.\
- the backward AD is useful when having a single last node, as in the usual case (loss function).\
+We can relax the assumption with the following idea:\
+We'll have a fusion of the "improved" backward AD (where possible - on invertible functions) and  "improved" forward pass (without saving intermediate values by default but in specific nodes as explained later).\
+Firstly, we do a single "improved" forward pass and when we encounter univertible function (or "hardly invertiable") we store the intermediate value, and proceed that way.\
+ By the end of the pass we have the last value, and we can implement the improved backward AD as long as we're not encountering uninvertible function - when we do, we use the corresponding stored intermediate value and continue the backward AD as usual.\
+ This way we reduce memory where we can and use the "ordinary" usage of memory (storing intermediate value in the node) where not.\
 
-3. these things can be useful in the context of deep neural networks because we can calculate the gradient of the loss w.r.t the parameters in a very efficient and modular way.\
+2.\
+ the forward AD technique can be generalized though be useful mainly when we have only one starting node because otherwise we would need to compute the forward AD w.r.t every starting node which would make it inefficient.\
+We can generalize the 'improved' backward AD with the usual caveats of topology and its affect on computation. graphs with many uninvertible or complex functions nodes will hinder the ability to save memory resulting in unwanted added complexity.\
+
+3. our implementation saves intermediate values where it can't compute them with the inverse function (doesn't exist or too complex), so in practice saves memory compared to the regular backward AD.\
+in deep networks we have many computational steps thus we have more opportunities to save memory with our improvement.\
+    
 
 
 
@@ -196,12 +201,12 @@ def part3_optim_hp():
 
 part3_q1 = r"""
 **Your answer:**\
-1. optimization error is the error that occurs due to the training process. e.g if we are training with gradient decent and the loss is non-convex we might get stuck on a local minima and not converge to the global minimum $\if$ optimization error.\
-we can decrease this error by using different maybe more suitable optimizers such as rmsprop or momentum.\
+1. optimization error is the error that occurs due to the training process. e.g if we are training with gradient decent and the loss is non-convex we might get stuck on a local minima and not converge to the global minimum -> optimization error.\
+we can decrease this error by using different maybe more suitable optimizers (different hyperparameters, algorithm..)
 \
-2. generalization error occurs because We train to minimize our empirical loss instead of the population loss. To reduce this error we can various method to try and prevent the overfitting such as regularization and dropout.\
+2. generalization error occurs because We train to minimize our empirical loss instead of the population loss. To reduce this error we can various method to try and prevent the overfitting such as smaller model, data augmentation, regularization (L2 or dropout), using validation set etc.\
 \
-3. approximation error occurs when we only consider a limited set of possible function. due to the approximation law we rarely have high approximation error because was shown that MLP with one hidden layer can approximate every function.
+3.  Approximation error - indicates the model's inability to represent the target function due to its insufficient complexity. We can lower it by increasing model complexity through width and/or depth, as well as changing architecture - adjust receptive field (the idea - better features or changing hypothesis set (model), etc.\
 """
 
 part3_q2 = r"""
@@ -262,7 +267,7 @@ for the right block:
 - third = $256 * (64*1 +1) = 16640$
 - total = 70016
 
-2. the amount of operations in a layer from ${C_{in},H_{in},W_{in}}$ to $C_{out},H_{out},W_{out}$ is $2 * C_{in} * F^2 * C_{out} H_{out} * W{out}$
+2. the amount of operations in a layer from ${C_{in},H_{in},W_{in}}$ to $C_{out},H_{out},W_{out}$ is $2 * C_{in} * F^2 * C_{out} H_{out} * W_{out}$
 where F is the size of the kernel and the '2' is for sum and mul.\
 in our implementation we kept the spatial dim so we can see the number of operations are mainly dependant on the number of channels which the left block has much more of.
 
