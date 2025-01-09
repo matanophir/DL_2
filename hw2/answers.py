@@ -24,15 +24,15 @@ $Y = XW^T + b$ -> $\delta\mat{X}=\delta\mat{Y} * \mat{W}$\
 A. following the logic above we can conclude that $\pderiv{\mat{Y}}{\mat{W}}$ is of size $(512,1024,64,512)$.\
 \
 B.
-$\mat{Y}_{n,j}$ is affected only by $\mat{W}_{j,i}$ (for all i). Thus, $\pderiv{\mat{Y}}{\mat{W}}$ is sparse as every element $(n,k,j,i)$ which represents $\pderiv\mat{Y}_{n,k}/\pderiv\mat{W}_{j,i} is zero whenever $k!=j$.\
+$\mat{Y}_{n,j}$ is affected only by $\mat{W}_{j,i}$ (for all i). Thus, $\pderiv{\mat{Y}}{\mat{W}}$ is sparse as every element $(n,k,j,i)$ which represents $\pderiv{\mat{Y}_{n,k}}{\mat{W}_{j,i}}$ is zero whenever $k!=j$.\
 \
-C. No. Again, similarly: $\deltaW=\delta(Y)*X$\
+C. No. Again, similarly: $\delta{W} = \delta{Y}*X$\
  
 """
 
 part1_q2 = r"""
 **Your answer:**
-Generally preferred but this is not a must. We've talked in class about some alternatives, in particular - even computing $\delta\mat{X}X$ by hand is possible. This quickly will get messy and ofc isn't scalable but possible...\
+Generally preferred but this is not a must. We've talked in class about some alternatives, in particular - even computing $\delta\mat{X}$ by hand is possible. This quickly will get messy and ofc isn't scalable but possible...\
 """
 
 # ==============
